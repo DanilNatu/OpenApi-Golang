@@ -44,5 +44,15 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": user})
 	})
 
+	router.POST("/users", func(c *gin.Context) {
+		var input User
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		db.Create(&input)
+		c.JSON(http.StatusOK, gin.H{"data": input})
+	})
+
 	router.Run(":3000")
 }
