@@ -54,5 +54,23 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": input})
 	})
 
+	router.PUT("/users/:id", func(c *gin.Context) {
+		var user User
+		id := c.Param("id")
+		if err := db.First(&user, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		var input User
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		db.Model(&user).Updates(input)
+		c.JSON(http.StatusOK, gin.H{"data": user})
+	})
+
+
 	router.Run(":3000")
 }
